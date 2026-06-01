@@ -81,6 +81,7 @@ interface AppState {
   // Active Authenticated User (Supabase Mock)
   user: AuthUser | null;
   authError: string | null;
+  guestWatchlist: string[];
 
   // Actions
   setPage: (page: "home" | "title" | "profile" | "tops" | "search" | "recommendations" | "director", slug?: string, username?: string) => void;
@@ -164,6 +165,15 @@ const initialSubs = (() => {
   }
 })();
 
+const initialGuestWatchlist = (() => {
+  try {
+    const d = localStorage.getItem("25kadr_guest_watchlist");
+    return d ? JSON.parse(d) : [];
+  } catch {
+    return [];
+  }
+})();
+
 export const useStore = create<AppState>((set, get) => ({
   currentPage: "home",
   activeSlug: "",
@@ -212,6 +222,7 @@ export const useStore = create<AppState>((set, get) => ({
 
   user: cachedUser,
   authError: null,
+  guestWatchlist: initialGuestWatchlist,
 
   setPage: (page, slug = "", username = "") => {
     set({ currentPage: page, activeSlug: slug, activeUsername: username, errorMsg: null });
@@ -762,7 +773,12 @@ export const useStore = create<AppState>((set, get) => ({
   toggleWatchlist: async (movieSlug) => {
     const { user } = get();
     if (!user) {
-      set({ errorMsg: "Пожалуйста, войдите в аккаунт, чтобы добавить в список ожидания" });
+      const guestList = get().guestWatchlist || [];
+      const updated = guestList.includes(movieSlug)
+        ? guestList.filter(slug => slug !== movieSlug)
+        : [...guestList, movieSlug];
+      set({ guestWatchlist: updated });
+      localStorage.setItem("25kadr_guest_watchlist", JSON.stringify(updated));
       return;
     }
 

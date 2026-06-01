@@ -11,9 +11,9 @@ interface FilmCardProps {
 }
 
 export function FilmCard({ movie }: FilmCardProps) {
-  const { setPage, user, toggleWatchlist } = useStore();
+  const { setPage, user, toggleWatchlist, guestWatchlist } = useStore();
 
-  const isWatched = user ? user.watchlist.includes(movie.slug) : false;
+  const isWatched = user ? user.watchlist.includes(movie.slug) : (guestWatchlist || []).includes(movie.slug);
 
   const handleCardClick = () => {
     setPage("title", movie.slug);

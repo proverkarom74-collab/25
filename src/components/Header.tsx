@@ -216,7 +216,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#121212]/95 border-b border-graphite-light backdrop-blur-md">
+    <header className={`sticky top-0 bg-[#121212]/95 border-b border-graphite-light backdrop-blur-md transition-all duration-150 ${(showAuth || showGenerator) ? "z-[9999]" : "z-50"}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
         {/* Logo */}
         <div 
@@ -899,19 +899,25 @@ export function Header() {
 
       {/* Dynamic AI Generator Panel Drawer */}
       {showGenerator && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-graphite border border-graphite-light rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[9999] flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-graphite border border-graphite-light rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden my-auto">
+            {/* Aesthetic design top garnish */}
+            <div className="h-1 bg-gradient-to-r from-garnet to-garnet-light w-full" />
+            
             <button 
+              type="button"
               onClick={() => setShowGenerator(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white text-lg transition cursor-pointer"
+              className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-all duration-200 cursor-pointer z-10"
+              title="Закрыть"
             >
-              ✕
+              <X className="w-4 h-4" />
             </button>
             
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-garnet" />
-              <h3 className="text-lg font-bold text-white">ИИ Поиск и Автогенерация</h3>
-            </div>
+            <div className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-5 h-5 text-garnet" />
+                <h3 className="text-lg font-bold text-white">ИИ Поиск и Автогенерация</h3>
+              </div>
 
             <p className="text-xs text-gray-400 mb-4 leading-relaxed">
               Введите название любого фильма, сериала, аниме или короткометражки в мире. 
@@ -989,6 +995,7 @@ export function Header() {
                 )}
               </button>
             </form>
+          </div>
           </div>
         </div>
       )}

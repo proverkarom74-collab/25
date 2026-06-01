@@ -594,45 +594,11 @@ export default function App() {
                   Синхронизация ленты друзей...
                 </div>
               ) : followingReviews.length === 0 ? (
-                <div className="bg-graphite border border-graphite-light p-8 rounded-xl text-center text-xs text-gray-400 leading-relaxed font-sans max-w-xl mx-auto space-y-4">
-                  <p className="font-semibold text-white">Вы еще ни на кого не подписаны или ваши авторы еще не оставили рецензий!</p>
-                  <p className="text-gray-400 text-xs text-center">Рекомендуем подписаться на интересных кинокритиков сообщества:</p>
-                  
-                  {/* Quick recommendation list */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-left">
-                    {[
-                      { id: "critic1", name: "Александр Елисеев", username: "kinoman_99", bio: "Нолан, Быков, Тарковский." },
-                      { id: "critic2", name: "Мария Смирнова", username: "balabanov_fan", bio: "Балабанов, эстетика реализма." },
-                      { id: "critic3", name: "Константин Ким", username: "otaku_review", bio: "Отаку со стажем, разбор аниме." }
-                    ].filter(c => c.id !== user.id).map(c => {
-                      const followingList = user.following || [];
-                      const isSubbed = followingList.includes(c.id);
-                      return (
-                        <div key={c.id} className="bg-graphite-dark border border-graphite-light p-3 rounded-lg flex items-center justify-between gap-3 text-xs">
-                          <div>
-                            <p 
-                              onClick={() => setPage("profile", "", c.username)}
-                              className="font-bold text-white hover:text-garnet transition cursor-pointer"
-                            >
-                              {c.name}
-                            </p>
-                            <p className="text-[10px] text-gray-500 font-mono">@{c.username}</p>
-                            <p className="text-[10px] text-gray-400 mt-1 truncate max-w-[150px]">{c.bio}</p>
-                          </div>
-                          <button
-                            onClick={() => toggleFollowUser(c.id)}
-                            className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase transition font-mono border cursor-pointer ${
-                              isSubbed 
-                                ? "bg-garnet border-garnet text-white"
-                                : "bg-graphite hover:bg-garnet/15 border-graphite-light text-gray-300"
-                            }`}
-                          >
-                            {isSubbed ? "✓ Подписка" : "Читать"}
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
+                <div className="bg-graphite border border-graphite-light p-8 rounded-xl text-center text-xs text-gray-400 leading-relaxed font-sans max-w-xl mx-auto space-y-3">
+                  <p className="font-semibold text-white text-sm">Вы еще ни на кого не подписаны или ваши авторы еще не оставили рецензий!</p>
+                  <p className="text-gray-400 text-xs">
+                    Начните писать свои рецензии и делитесь мыслями о любимых произведениях кинематографа. Пригласите своих знакомых на платформу «25-й Кадр», чтобы обмениваться оценками и комментариями к фильмам!
+                  </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

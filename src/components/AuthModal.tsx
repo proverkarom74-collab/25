@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useStore } from "../store";
-import { Sparkles, Mail, Lock, User, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import { Sparkles, Mail, Lock, User, Eye, EyeOff, Loader2, AlertCircle, X } from "lucide-react";
 
 interface AuthModalProps {
   mode: "login" | "register";
@@ -41,16 +41,18 @@ export function AuthModal({ mode, setMode, onClose }: AuthModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-graphite border border-graphite-light rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[9999] flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-graphite border border-graphite-light rounded-2xl w-full max-w-sm shadow-2xl relative overflow-hidden my-auto">
         {/* Aesthetic design top garnish */}
         <div className="h-1 bg-gradient-to-r from-garnet to-garnet-light w-full" />
         
         <button 
+          type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-white transition cursor-pointer text-lg"
+          className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-all duration-200 cursor-pointer z-10"
+          title="Закрыть"
         >
-          ✕
+          <X className="w-4 h-4" />
         </button>
 
         <div className="p-6">
