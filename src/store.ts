@@ -229,41 +229,49 @@ export const useStore = create<AppState>((set, get) => ({
     
     try {
       if (typeof window !== "undefined") {
-        const url = new URL(window.location.href);
-        const currentMovieParam = url.searchParams.get("movie");
-        const currentUserParam = url.searchParams.get("user");
-        
         let changed = false;
+        let targetPathname = window.location.pathname;
+
         if (page === "title" && slug) {
-          if (currentMovieParam !== slug) {
-            url.searchParams.set("movie", slug);
-            url.searchParams.delete("user");
+          if (window.location.pathname !== `/title/${slug}` && window.location.pathname !== `/movie/${slug}`) {
+            // Support both templates; default to /movie/${slug} which can be ID or slug
+            targetPathname = `/movie/${slug}`;
             changed = true;
           }
         } else if (page === "profile" && username) {
-          if (currentUserParam !== username) {
-            url.searchParams.set("user", username);
-            url.searchParams.delete("movie");
+          if (window.location.pathname !== `/user/${username}`) {
+            targetPathname = `/user/${username}`;
             changed = true;
           }
         } else if (page === "director" && slug) {
-          if (url.searchParams.get("director") !== slug) {
-            url.searchParams.set("director", slug);
-            url.searchParams.delete("movie");
-            url.searchParams.delete("user");
+          if (window.location.pathname !== `/director/${slug}`) {
+            targetPathname = `/director/${slug}`;
             changed = true;
           }
-        } else if (page === "home" || page === "tops" || page === "search" || page === "recommendations") {
-          if (currentMovieParam || currentUserParam || url.searchParams.get("director")) {
-            url.searchParams.delete("movie");
-            url.searchParams.delete("user");
-            url.searchParams.delete("director");
+        } else if (page === "home") {
+          if (window.location.pathname !== "/") {
+            targetPathname = "/";
+            changed = true;
+          }
+        } else if (page === "tops") {
+          if (window.location.pathname !== "/tops") {
+            targetPathname = "/tops";
+            changed = true;
+          }
+        } else if (page === "search") {
+          if (window.location.pathname !== "/search") {
+            targetPathname = "/search";
+            changed = true;
+          }
+        } else if (page === "recommendations") {
+          if (window.location.pathname !== "/recommendations") {
+            targetPathname = "/recommendations";
             changed = true;
           }
         }
 
         if (changed) {
-          window.history.pushState({ page, slug, username }, "", url.toString());
+          window.history.pushState({ page, slug, username }, "", targetPathname);
         }
       }
     } catch (e) {

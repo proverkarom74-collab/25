@@ -256,27 +256,69 @@ export default function App() {
   // Listen for browser navigation / initial page load deep linking
   useEffect(() => {
     const handlePopState = () => {
+      const path = window.location.pathname;
       const params = new URLSearchParams(window.location.search);
-      const movieSlug = params.get("movie");
-      const username = params.get("user");
-      const directorId = params.get("director");
+      
+      const movieMatch = path.match(/^\/movie\/([^/]+)/);
+      const titleMatch = path.match(/^\/title\/([^/]+)/);
+      const userMatch = path.match(/^\/user\/([^/]+)/);
+      const directorMatch = path.match(/^\/director\/([^/]+)/);
       
       const currentStoreState = useStore.getState();
-      if (movieSlug) {
+      
+      if (movieMatch) {
+        const movieId = movieMatch[1];
+        if (currentStoreState.currentPage !== "title" || currentStoreState.activeSlug !== movieId) {
+          setPage("title", movieId);
+        }
+      } else if (titleMatch) {
+        const movieSlug = titleMatch[1];
         if (currentStoreState.currentPage !== "title" || currentStoreState.activeSlug !== movieSlug) {
           setPage("title", movieSlug);
         }
-      } else if (username) {
+      } else if (userMatch) {
+        const username = userMatch[1];
         if (currentStoreState.currentPage !== "profile" || currentStoreState.activeUsername !== username) {
           setPage("profile", "", username);
         }
-      } else if (directorId) {
-        if (currentStoreState.currentPage !== "director" || currentStoreState.activeSlug !== directorId) {
-          setPage("director", directorId);
-        }
+      } else if (directorMatch) {
+         const directorId = directorMatch[1];
+         if (currentStoreState.currentPage !== "director" || currentStoreState.activeSlug !== directorId) {
+           setPage("director", directorId);
+         }
+      } else if (path === "/tops") {
+         if (currentStoreState.currentPage !== "tops") {
+           setPage("tops");
+         }
+      } else if (path === "/search") {
+         if (currentStoreState.currentPage !== "search") {
+           setPage("search");
+         }
+      } else if (path === "/recommendations") {
+         if (currentStoreState.currentPage !== "recommendations") {
+           setPage("recommendations");
+         }
       } else {
-        if (currentStoreState.currentPage !== "home" && currentStoreState.currentPage !== "tops" && currentStoreState.currentPage !== "search") {
-          setPage("home");
+        const movieSlug = params.get("movie");
+        const username = params.get("user");
+        const directorId = params.get("director");
+        
+        if (movieSlug) {
+          if (currentStoreState.currentPage !== "title" || currentStoreState.activeSlug !== movieSlug) {
+            setPage("title", movieSlug);
+          }
+        } else if (username) {
+          if (currentStoreState.currentPage !== "profile" || currentStoreState.activeUsername !== username) {
+            setPage("profile", "", username);
+          }
+        } else if (directorId) {
+          if (currentStoreState.currentPage !== "director" || currentStoreState.activeSlug !== directorId) {
+            setPage("director", directorId);
+          }
+        } else {
+          if (currentStoreState.currentPage !== "home" && currentStoreState.currentPage !== "tops" && currentStoreState.currentPage !== "search" && currentStoreState.currentPage !== "recommendations") {
+            setPage("home");
+          }
         }
       }
     };

@@ -819,12 +819,12 @@ async function startServer() {
     res.json(list);
   });
 
-  // Get single movie reviews
+  // Get single movie reviews by slug or id
   app.get("/api/movies/:slug", async (req, res) => {
     const { slug } = req.params;
     const db = readDB();
 
-    const movieIdx = db.movies.findIndex(m => m.slug === slug);
+    const movieIdx = db.movies.findIndex(m => m.slug === slug || m.id === slug);
     if (movieIdx === -1) {
       return res.status(404).json({ error: "Произведение не найдено в базе данных" });
     }
@@ -841,7 +841,7 @@ async function startServer() {
 
     const dbReloaded = readDB();
     const finalMovie = dbReloaded.movies[movieIdx] || movie;
-    const movieReviews = dbReloaded.reviews.filter(r => r.titleSlug === slug);
+    const movieReviews = dbReloaded.reviews.filter(r => r.titleSlug === finalMovie.slug || r.titleId === finalMovie.id);
     res.json({ movie: finalMovie, reviews: movieReviews });
   });
 
