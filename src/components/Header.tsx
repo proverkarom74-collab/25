@@ -81,6 +81,7 @@ export function Header() {
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [showGenerator, setShowGenerator] = useState(false);
   const [genTitle, setGenTitle] = useState("");
+  const [genYear, setGenYear] = useState("");
   const [genType, setGenType] = useState<"movie" | "tv" | "anime" | "short">("movie");
 
   // Search History dropdown state
@@ -203,10 +204,11 @@ export function Header() {
   const handleSuggestAndGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!genTitle.trim()) return;
-    const ok = await generateNewMovie(genTitle, genType);
+    const ok = await generateNewMovie(genTitle, genType, genYear.trim() || undefined);
     if (ok) {
       setShowGenerator(false);
       setGenTitle("");
+      setGenYear("");
     }
   };
 
@@ -936,6 +938,21 @@ export function Header() {
                   value={genTitle}
                   onChange={(e) => setGenTitle(e.target.value)}
                   className="w-full bg-graphite-dark border border-graphite-light text-sm text-gray-200 rounded-lg p-3 placeholder-gray-600 focus:outline-none focus:border-garnet focus:ring-1 focus:ring-garnet"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5">
+                  Год выхода (опционально)
+                </label>
+                <input
+                  type="text"
+                  max={2030}
+                  min={1880}
+                  placeholder="Например: 1999"
+                  value={genYear}
+                  onChange={(e) => setGenYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  className="w-full bg-graphite-dark border border-graphite-light text-sm text-gray-200 rounded-lg p-3 placeholder-gray-600 focus:outline-none focus:border-garnet focus:ring-1 focus:ring-garnet font-mono"
                 />
               </div>
 

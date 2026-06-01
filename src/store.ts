@@ -97,7 +97,7 @@ interface AppState {
   // API Core Methods
   fetchMovies: () => Promise<void>;
   fetchMovieBySlug: (slug: string) => Promise<void>;
-  generateNewMovie: (title: string, type: MediaType) => Promise<boolean>;
+  generateNewMovie: (title: string, type: MediaType, year?: string) => Promise<boolean>;
   correctMovieData: (slug: string, description: string) => Promise<boolean>;
   refreshMovieRatings: (slug: string) => Promise<boolean>;
   correctDirectorBio: (directorId: string, description: string) => Promise<boolean>;
@@ -454,13 +454,13 @@ export const useStore = create<AppState>((set, get) => ({
     localStorage.setItem("sub_directors", JSON.stringify(updated));
   },
 
-  generateNewMovie: async (title, type) => {
+  generateNewMovie: async (title, type, year) => {
     set({ generatingMovie: true, errorMsg: null });
     try {
       const res = await fetch(`/api/gemini/generate-movie`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: title, type })
+        body: JSON.stringify({ query: title, type, year })
       });
       const data = await res.json();
       if (res.ok && data.success) {

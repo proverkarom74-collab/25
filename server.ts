@@ -537,8 +537,94 @@ async function startServer() {
     }
 
     const canon = CANONICAL_IDS_AND_RATINGS[movie.slug];
-    const kpId = movie.kinopoiskId || (canon ? canon.kinopoiskId : undefined);
-    const imdbId = movie.imdbId || (canon ? canon.imdbId : undefined);
+    let kpId = movie.kinopoiskId || (canon ? canon.kinopoiskId : undefined);
+    let imdbId = movie.imdbId || (canon ? canon.imdbId : undefined);
+
+    const titleToSearch = movie.originalTitle || movie.title;
+    const searchYear = movie.year;
+
+    // --- TMDB API Lookup ---
+    if (!imdbId && process.env.TMDB_API_KEY && process.env.TMDB_API_KEY.trim() !== "") {
+      try {
+        const tmdbType = (movie.type === "tv" || movie.type === "anime") ? "tv" : "movie";
+        const yearParam = tmdbType === "tv" ? `first_air_date_year=${searchYear}` : `primary_release_year=${searchYear}&year=${searchYear}`;
+        console.log(`Searching TMDB for ${movie.title} (${searchYear})`);
+        const tmdbSearchRes = await fetch(
+          `https://api.themoviedb.org/3/search/${tmdbType}?api_key=${process.env.TMDB_API_KEY}&query=${encodeURIComponent(titleToSearch)}&${yearParam}`
+        );
+        if (tmdbSearchRes.ok) {
+          const tmdbSearchData = await tmdbSearchRes.json();
+          if (tmdbSearchData && tmdbSearchData.results && tmdbSearchData.results.length > 0) {
+            // First result (ignores collections / franchise sets as we call search/movie or search/tv directly)
+            const firstResult = tmdbSearchData.results[0];
+            const tmdbId = firstResult.id;
+            console.log(`Found TMDB ID ${tmdbId} for ${movie.title}`);
+            const extRes = await fetch(
+              `https://api.themoviedb.org/3/${tmdbType}/${tmdbId}/external_ids?api_key=${process.env.TMDB_API_KEY}`
+            );
+            if (extRes.ok) {
+              const extData = await extRes.json();
+              if (extData && extData.imdb_id) {
+                imdbId = extData.imdb_id;
+                console.log(`Resolved IMDb ID ${imdbId} via TMDB for ${movie.title}`);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error("TMDB search resolution error:", err);
+      }
+    }
+
+    // --- OMDB API Lookup ---
+    if (!imdbId && process.env.OMDB_API_KEY && process.env.OMDB_API_KEY.trim() !== "") {
+      try {
+        console.log(`Searching OMDB for ${movie.title} (${searchYear})`);
+        const omdbSearchRes = await fetch(
+          `https://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&t=${encodeURIComponent(titleToSearch)}&y=${searchYear}`
+        );
+        if (omdbSearchRes.ok) {
+          const omdbSearchData = await omdbSearchRes.json();
+          if (omdbSearchData && omdbSearchData.Response === "True" && omdbSearchData.imdbID) {
+            imdbId = omdbSearchData.imdbID;
+            console.log(`Resolved IMDb ID ${imdbId} via OMDB search for ${movie.title}`);
+          }
+        }
+      } catch (err) {
+        console.error("OMDB search resolution error:", err);
+      }
+    }
+
+    // --- Kinopoisk API Lookup ---
+    if (!kpId && process.env.KINOPOISK_API_KEY && process.env.KINOPOISK_API_KEY.trim() !== "") {
+      try {
+        console.log(`Searching Kinopoisk for ${movie.title} (${searchYear})`);
+        const kpSearchRes = await fetch(
+          `https://kinopoiskapiunofficial.tech/api/v2.2/films?keyword=${encodeURIComponent(movie.title)}&yearFrom=${searchYear}&yearTo=${searchYear}`,
+          {
+            headers: {
+              "X-API-KEY": process.env.KINOPOISK_API_KEY,
+              "Content-Type": "application/json"
+            }
+          }
+        );
+        if (kpSearchRes.ok) {
+          const kpSearchData = await kpSearchRes.json();
+          if (kpSearchData && kpSearchData.items && kpSearchData.items.length > 0) {
+            const validItem = kpSearchData.items.find((item: any) => 
+              item.type === "FILM" || item.type === "TV_SERIES" || item.type === "MINI_SERIES" || item.type === "VIDEO"
+            ) || kpSearchData.items[0];
+            
+            if (validItem) {
+              kpId = String(validItem.kinopoiskId || validItem.filmId);
+              console.log(`Resolved Kinopoisk ID ${kpId} for ${movie.title}`);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Kinopoisk search resolution error:", err);
+      }
+    }
 
     let extRatings: any = { ...movie.externalRatings };
     let updatedKp = extRatings.kinopoisk;
@@ -1183,7 +1269,7 @@ async function startServer() {
 
   // AI-powered generation endpoint to create or search ANY movie in the world!
   app.post("/api/gemini/generate-movie", async (req, res) => {
-    const { query, type: clientType } = req.body;
+    const { query, type: clientType, year } = req.body;
     if (!query) {
       return res.status(400).json({ error: "Пожалуйста, введите название фильма" });
     }
@@ -1191,10 +1277,19 @@ async function startServer() {
     const db = readDB();
     const cleanQuery = query.toLowerCase().trim();
 
+    let clientYear = year ? parseInt(String(year)) : undefined;
+    if (!clientYear) {
+      const parsedYearMatch = query.match(/\b(19|20)\d{2}\b/);
+      if (parsedYearMatch) {
+        clientYear = parseInt(parsedYearMatch[0]);
+      }
+    }
+
     // Check if we already have it to avoid Gemini costs
     const existing = db.movies.find(m => 
-      m.title.toLowerCase() === cleanQuery || 
-      (m.originalTitle && m.originalTitle.toLowerCase() === cleanQuery)
+      (m.title.toLowerCase() === cleanQuery || 
+       (m.originalTitle && m.originalTitle.toLowerCase() === cleanQuery)) &&
+      (!clientYear || m.year === clientYear)
     );
 
     if (existing) {
@@ -1216,8 +1311,8 @@ async function startServer() {
         title: query,
         originalTitle: query + " Classic Edition",
         type: (clientType as MediaType) || "movie",
-        year: 2024,
-        releaseDate: "2024-03-15",
+        year: clientYear || 2024,
+        releaseDate: `${clientYear || 2024}-03-15`,
         genres: [randTag1, randTag2],
         duration: "115 мин",
         country: "США / Россия",
@@ -1251,8 +1346,8 @@ async function startServer() {
     }
 
     try {
-      console.log(`Querying Gemini to generate movie details for: ${query}`);
-      const prompt = `Пожалуйста, найди точную энциклопедическую информацию о фильме/сериале/аниме/произведении кинематографа: "${query}".
+      console.log(`Querying Gemini to generate movie details for: ${query} (Year: ${clientYear || "any"})`);
+      const prompt = `Пожалуйста, найди точную энциклопедическую информацию о фильме/сериале/аниме/произведении кинематографа: "${query}"${clientYear ? ` (год релиза: ${clientYear})` : ""}.
 Если это произведение реальное, заполни все детали исторически корректно. Если оно малоизвестное или вымышленное, сгенерируй реалистичные подробности.
 Выведи результат строго в формате JSON, соответствующем схеме. Все текстовые поля должны быть на русском языке. Описание (overview) сделай развернутым, увлекательным в стиле кинокритика.`;
 
