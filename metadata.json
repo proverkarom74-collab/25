@@ -1,0 +1,6 @@
+{
+  "name": "25-й Кадр",
+  "description": "Premium Russian movie rating and reviews community portal in the spirit of Letterboxd and Risa za Tvorchestvo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

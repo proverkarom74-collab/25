@@ -1,0 +1,337 @@
+@import "tailwindcss";
+
+:root {
+  --color-graphite: #1c1c1c;
+  --color-graphite-dark: #121212;
+  --color-graphite-light: #2c2c2c;
+  --color-panel: #161a26;
+  --color-nested: #11131c;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+}
+
+[data-theme="light"] {
+  --color-graphite: #ffffff;
+  --color-graphite-dark: #ffffff;
+  --color-graphite-light: #cbd5e1;
+  --color-panel: #ffffff;
+  --color-nested: #fafafa;
+  --text-primary: #000000;
+  --text-secondary: #334155;
+
+  /* Global background settings to fulfill "the entire site must become white" */
+  body, 
+  .bg-[#121212],
+  .bg-[#11131c], 
+  .bg-[#000000], 
+  .bg-black,
+  .bg-[#161a26], 
+  .bg-[#2c2c2c],
+  .bg-[#1c1c1c],
+  .bg-graphite-dark, 
+  .bg-graphite,
+  .bg-panel,
+  .bg-nested,
+  .bg-slate-900,
+  .bg-slate-950,
+  .bg-[#161a26]\/95,
+  .bg-[#161a26]\/90,
+  .bg-[#161a26]\/85,
+  .bg-[#161a26]\/60,
+  header,
+  footer,
+  aside,
+  dialog {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+  }
+
+  /* Specific background exceptions to preserve the red look or tag selections */
+  .bg-garnet,
+  button.bg-garnet,
+  .bg-garnet-light,
+  .bg-garnet-dark,
+  .bg-\[\#800001\],
+  .bg-\[\#ab0204\] {
+    background-color: #800001 !important;
+    color: #ffffff !important;
+  }
+  
+  .bg-\[\#800001\]\/10, .bg-garnet\/10 {
+    background-color: rgba(128, 0, 1, 0.08) !important;
+  }
+
+  /* Star ratings and active highlights background */
+  .bg-amber-500, .bg-amber-400 {
+    background-color: #f59e0b !important;
+  }
+  .bg-amber-950 {
+    background-color: #fef3c7 !important;
+  }
+
+  /* Standard text colors flipped to black and high-contrast dark gray */
+  h1, h2, h3, h4, h5, h6, p, span, div, label, li, a, time, textarea, input, select {
+    color: #0e0e11 !important;
+  }
+
+  /* Explicit text class overrides */
+  .text-white,
+  .text-gray-100,
+  .text-gray-200,
+  .text-gray-300,
+  .text-gray-400,
+  .text-gray-500,
+  .text-gray-350,
+  .text-slate-350,
+  .text-\[\#f3f4f6\],
+  .text-slate-405,
+  .text-slate-400,
+  .text-slate-300 {
+    color: #111115 !important;
+  }
+
+  .text-gray-600, .text-gray-500, .text-slate-500 {
+    color: #334155 !important;
+  }
+
+  /* Keep red, amber, gold text intact */
+  .text-garnet,
+  .text-\[\#800001\],
+  .text-garnet-light,
+  .text-\[\#ab0204\],
+  span.text-garnet {
+    color: #800001 !important;
+  }
+  
+  .text-amber-500,
+  .text-amber-400,
+  .text-amber-300,
+  .text-yellow-400 {
+    color: #f59e0b !important;
+  }
+
+  /* Border colors */
+  *,
+  .border,
+  .border-b,
+  .border-t,
+  .border-l,
+  .border-r,
+  .border-graphite-light,
+  .border-slate-800,
+  .border-slate-700,
+  .border-slate-800\/60,
+  .border-slate-750,
+  .border-\[\#2c2c2c\],
+  .border-graphite-light\/20,
+  .border-graphite-light\/40,
+  .border-graphite-light\/60 {
+    border-color: #cbd5e1 !important;
+  }
+
+  /* Exclude brand red and amber borders */
+  .border-garnet, .border-garnet\/30, .border-garnet\/50, .border-garnet\/25 {
+    border-color: #800001 !important;
+  }
+  .border-amber-505, .border-amber-500, .border-amber-500\/55, .border-amber-500\/50 {
+    border-color: #f59e0b !important;
+  }
+
+  /* Input focus & contrast formatting */
+  input, select, textarea {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+  input::placeholder, textarea::placeholder {
+    color: #718096 !important;
+  }
+
+  /* Secondary neutral button backgrounds */
+  .bg-graphite {
+    background-color: #f1f5f9 !important;
+  }
+  .bg-graphite:hover {
+    background-color: #e2e8f0 !important;
+  }
+  .bg-graphite-light {
+    background-color: #e2e8f0 !important;
+  }
+  .bg-graphite-light:hover {
+    background-color: #cbd5e1 !important;
+  }
+
+  /* Dropdowns / absolute overlays */
+  .absolute.bg-graphite-dark,
+  .absolute.bg-\[\#161a26\],
+  .fixed.bg-\[\#161a26\] {
+    background-color: #ffffff !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  /* Achievements modal content styling */
+  .bg-\[\#161a26\]\/95 {
+    background-color: rgba(255, 255, 255, 0.98) !important;
+  }
+
+  /* Rating and filter pill states */
+  .bg-\[\#800002\]\/15, .bg-\[\#800000\]\/15 {
+    background-color: rgba(128, 0, 1, 0.12) !important;
+  }
+
+  /* Horizontal sliders track custom */
+  input[type="range"]::-webkit-slider-runnable-track {
+    background: #cbd5e1 !important;
+    border-color: #94a3b8 !important;
+  }
+}
+
+@theme {
+  --color-graphite: var(--color-graphite);
+  --color-graphite-dark: var(--color-graphite-dark);
+  --color-graphite-light: var(--color-graphite-light);
+  --color-garnet: #800001;
+  --color-garnet-light: #ab0204;
+  --color-garnet-dark: #4d0000;
+}
+
+body {
+  background-color: var(--color-graphite-dark);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-graphite-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-graphite);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-garnet);
+}
+
+.glow-garnet {
+  text-shadow: 0 0 10px rgba(128, 0, 1, 0.4);
+}
+
+.box-glow-garnet {
+  box-shadow: 0 0 20px rgba(128, 0, 1, 0.15);
+}
+
+/* Custom Uniform Slider (Range Input) Styling across Browsers */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Track Styling (Chrome, Safari, Edge, Opera) */
+input[type="range"]::-webkit-slider-runnable-track {
+  background: var(--color-graphite-dark);
+  height: 6px;
+  border-radius: 9999px;
+  border: 1px solid var(--color-graphite-light);
+  transition: all 0.2s ease;
+}
+
+/* Track Styling (Firefox) */
+input[type="range"]::-moz-range-track {
+  background: var(--color-graphite-dark);
+  height: 6px;
+  border-radius: 9999px;
+  border: 1px solid var(--color-graphite-light);
+  transition: all 0.2s ease;
+}
+
+/* Thumb Styling (Chrome, Safari, Edge, Opera) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -5px; /* Alignment with track */
+  background-color: var(--color-garnet-light);
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Thumb Styling (Firefox) */
+input[type="range"]::-moz-range-thumb {
+  border: none;
+  background-color: var(--color-garnet-light);
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Hover Thumb State */
+input[type="range"]:hover::-webkit-slider-thumb {
+  background-color: #ef4444; /* Brighter accent red on hover */
+  transform: scale(1.15);
+}
+
+input[type="range"]:hover::-moz-range-thumb {
+  background-color: #ef4444;
+  transform: scale(1.15);
+}
+
+/* Active & Focused Thumb States (Distinct Accent Color & Pulsing Glow) */
+input[type="range"]:active::-webkit-slider-thumb,
+input[type="range"]:focus::-webkit-slider-thumb {
+  background-color: #ff3333; /* Dynamic distinct active accent tint */
+  box-shadow: 0 0 12px rgba(255, 51, 51, 0.75), 0 0 0 3px rgba(255, 51, 51, 0.25);
+  transform: scale(1.25);
+}
+
+input[type="range"]:active::-moz-range-thumb,
+input[type="range"]:focus::-moz-range-thumb {
+  background-color: #ff3333;
+  box-shadow: 0 0 12px rgba(255, 51, 51, 0.75), 0 0 0 3px rgba(255, 51, 51, 0.25);
+  transform: scale(1.25);
+}
+
+/* Slider Track State when Active or Focused */
+input[type="range"]:active::-webkit-slider-runnable-track,
+input[type="range"]:focus::-webkit-slider-runnable-track {
+  background: #181818;
+  border-color: rgba(255, 51, 51, 0.4);
+}
+
+input[type="range"]:active::-moz-range-track,
+input[type="range"]:focus::-moz-range-track {
+  background: #181818;
+  border-color: rgba(255, 51, 51, 0.4);
+}
+
+/* Custom keyframes and animations for interactive elements */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 15s linear infinite;
+}
+
