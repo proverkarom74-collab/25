@@ -524,6 +524,36 @@ async function startServer() {
         metacritic: { rating: 61 },
         rottenTomatoes: { criticsRating: 58, audienceRating: 85 }
       }
+    },
+    "the-matrix": {
+      kinopoiskId: "301",
+      imdbId: "tt0133093",
+      ratings: {
+        kinopoisk: { rating: 8.5, votes: 671000 },
+        imdb: { rating: 8.7, votes: 2024000 },
+        metacritic: { rating: 73 },
+        rottenTomatoes: { criticsRating: 88, audienceRating: 94 }
+      }
+    },
+    "the-dark-knight": {
+      kinopoiskId: "111543",
+      imdbId: "tt0468569",
+      ratings: {
+        kinopoisk: { rating: 8.5, votes: 615000 },
+        imdb: { rating: 9.0, votes: 2831000 },
+        metacritic: { rating: 84 },
+        rottenTomatoes: { criticsRating: 94, audienceRating: 94 }
+      }
+    },
+    "lotr-fellowship": {
+      kinopoiskId: "348",
+      imdbId: "tt0120737",
+      ratings: {
+        kinopoisk: { rating: 8.6, votes: 520000 },
+        imdb: { rating: 8.8, votes: 1980000 },
+        metacritic: { rating: 92 },
+        rottenTomatoes: { criticsRating: 91, audienceRating: 95 }
+      }
     }
   };
 
@@ -533,6 +563,26 @@ async function startServer() {
     );
 
     if (!needsUpdate) {
+      const canon = CANONICAL_IDS_AND_RATINGS[movie.slug];
+      const kpId = movie.kinopoiskId || (canon ? canon.kinopoiskId : undefined);
+      const imdbId = movie.imdbId || (canon ? canon.imdbId : undefined);
+      const hasNewIds = (kpId && kpId !== movie.kinopoiskId) || (imdbId && imdbId !== movie.imdbId);
+      
+      if (hasNewIds) {
+        return {
+          ...movie,
+          kinopoiskId: kpId,
+          imdbId: imdbId,
+          externalRatings: {
+            ...movie.externalRatings,
+            kinopoisk: movie.externalRatings?.kinopoisk || (canon ? canon.ratings.kinopoisk : undefined),
+            imdb: movie.externalRatings?.imdb || (canon ? canon.ratings.imdb : undefined),
+            metacritic: movie.externalRatings?.metacritic || (canon ? canon.ratings.metacritic : undefined),
+            rottenTomatoes: movie.externalRatings?.rottenTomatoes || (canon ? canon.ratings.rottenTomatoes : undefined),
+            lastUpdated: movie.externalRatings?.lastUpdated || new Date().toISOString()
+          } as any
+        };
+      }
       return movie;
     }
 
@@ -555,9 +605,18 @@ async function startServer() {
         if (tmdbSearchRes.ok) {
           const tmdbSearchData = await tmdbSearchRes.json();
           if (tmdbSearchData && tmdbSearchData.results && tmdbSearchData.results.length > 0) {
-            // First result (ignores collections / franchise sets as we call search/movie or search/tv directly)
-            const firstResult = tmdbSearchData.results[0];
-            const tmdbId = firstResult.id;
+            // Pick strictly the first matched artistic movie/show, ignoring collections and franchise containers
+            const validResult = tmdbSearchData.results.find((item: any) => {
+              const rDate = item.release_date || item.first_air_date;
+              const titleLower = (item.title || item.name || "").toLowerCase();
+              const isCollection = titleLower.includes("collection") || 
+                                   titleLower.includes("коллекция") || 
+                                   titleLower.includes("серия фильмов") || 
+                                   titleLower.includes("франшиза");
+              return rDate && !isCollection;
+            }) || tmdbSearchData.results[0];
+
+            const tmdbId = validResult.id;
             console.log(`Found TMDB ID ${tmdbId} for ${movie.title}`);
             const extRes = await fetch(
               `https://api.themoviedb.org/3/${tmdbType}/${tmdbId}/external_ids?api_key=${process.env.TMDB_API_KEY}`
@@ -586,8 +645,17 @@ async function startServer() {
         if (omdbSearchRes.ok) {
           const omdbSearchData = await omdbSearchRes.json();
           if (omdbSearchData && omdbSearchData.Response === "True" && omdbSearchData.imdbID) {
-            imdbId = omdbSearchData.imdbID;
-            console.log(`Resolved IMDb ID ${imdbId} via OMDB search for ${movie.title}`);
+            const titleLower = (omdbSearchData.Title || "").toLowerCase();
+            const isCollection = titleLower.includes("collection") || 
+                                 titleLower.includes("коллекция") || 
+                                 titleLower.includes("серия фильмов") || 
+                                 titleLower.includes("франшиза");
+            const isArtistic = omdbSearchData.Type === "movie" || omdbSearchData.Type === "series";
+            
+            if (isArtistic && !isCollection) {
+              imdbId = omdbSearchData.imdbID;
+              console.log(`Resolved IMDb ID ${imdbId} via OMDB search for ${movie.title}`);
+            }
           }
         }
       } catch (err) {
@@ -611,9 +679,16 @@ async function startServer() {
         if (kpSearchRes.ok) {
           const kpSearchData = await kpSearchRes.json();
           if (kpSearchData && kpSearchData.items && kpSearchData.items.length > 0) {
-            const validItem = kpSearchData.items.find((item: any) => 
-              item.type === "FILM" || item.type === "TV_SERIES" || item.type === "MINI_SERIES" || item.type === "VIDEO"
-            ) || kpSearchData.items[0];
+            const validItem = kpSearchData.items.find((item: any) => {
+              const itemType = item.type;
+              const isFilmOrSeries = itemType === "FILM" || itemType === "TV_SERIES" || itemType === "MINI_SERIES" || itemType === "VIDEO";
+              const titleLower = (item.nameRu || item.nameEn || item.nameOriginal || "").toLowerCase();
+              const isCollection = titleLower.includes("коллекция") || 
+                                   titleLower.includes("collection") || 
+                                   titleLower.includes("серия фильмов") || 
+                                   titleLower.includes("франшиза");
+              return isFilmOrSeries && !isCollection;
+            }) || kpSearchData.items[0];
             
             if (validItem) {
               kpId = String(validItem.kinopoiskId || validItem.filmId);

@@ -1030,7 +1030,7 @@ export default function App() {
 
             {/* External Ratings Block */}
             {currentMovie && (
-              <ExternalRatings slug={currentMovie.slug} externalRatings={currentMovie.externalRatings} title={currentMovie.title} kinopoiskId={currentMovie.kinopoiskId} imdbId={currentMovie.imdbId} />
+              <ExternalRatings slug={currentMovie.slug} externalRatings={currentMovie.externalRatings} title={currentMovie.title} kinopoiskId={currentMovie.kinopoiskId} imdbId={currentMovie.imdbId} year={currentMovie.year} />
             )}
 
             {/* Form writing reviews tab */}

@@ -10,6 +10,7 @@ interface ExternalRatingsProps {
   title: string;
   kinopoiskId?: string;
   imdbId?: string;
+  year?: number;
 }
 
 export function formatVotes(votes: number | undefined): string {
@@ -23,19 +24,21 @@ export function formatVotes(votes: number | undefined): string {
   return votes.toString();
 }
 
-export default function ExternalRatings({ slug, externalRatings, title, kinopoiskId, imdbId }: ExternalRatingsProps) {
+export default function ExternalRatings({ slug, externalRatings, title, kinopoiskId, imdbId, year }: ExternalRatingsProps) {
   const { user, refreshMovieRatings } = useStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [cooldown, setCooldown] = useState(false);
 
+  const queryTerms = year ? `${title} ${year}` : title;
+
   const kpUrl = kinopoiskId
     ? `https://www.kinopoisk.ru/film/${kinopoiskId}/`
-    : `https://www.kinopoisk.ru/index.php?kp_query=${encodeURIComponent(title)}`;
+    : `https://www.kinopoisk.ru/index.php?kp_query=${encodeURIComponent(queryTerms)}`;
 
   const imdbUrl = imdbId
     ? `https://www.imdb.com/title/${imdbId}/`
-    : `https://www.imdb.com/find?q=${encodeURIComponent(title)}`;
+    : `https://www.imdb.com/find?q=${encodeURIComponent(queryTerms)}`;
 
   const metacriticUrl = `https://www.metacritic.com/search/${encodeURIComponent(title)}/`;
 

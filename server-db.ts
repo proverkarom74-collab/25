@@ -33,16 +33,8 @@ const DB_PATH = path.join(process.cwd(), "db.json");
 let dbCache: DatabaseSchema | null = null;
 
 function getInitialDB(): DatabaseSchema {
-  // Clear movie ratings and count for a clean production setup
-  const cleanMovies: MovieTitle[] = SEED_MOVIES.map(movie => ({
-    ...movie,
-    ratingsAverageBreakdown: { story: 0, acting: 0, visuals: 0, sound: 0, genreMatch: 0 },
-    ratingAverage: 0,
-    ratingsCount: 0
-  }));
-
   return {
-    movies: cleanMovies,
+    movies: [],
     reviews: [],
     users: [],
     auth: [],
@@ -80,12 +72,7 @@ export function readDB(): DatabaseSchema {
       fallbackNeeded = true;
     }
     if (!parsed.movies) {
-      parsed.movies = SEED_MOVIES.map(movie => ({
-        ...movie,
-        ratingsAverageBreakdown: { story: 0, acting: 0, visuals: 0, sound: 0, genreMatch: 0 },
-        ratingAverage: 0,
-        ratingsCount: 0
-      }));
+      parsed.movies = [];
       fallbackNeeded = true;
     }
     if (!parsed.reviews) {

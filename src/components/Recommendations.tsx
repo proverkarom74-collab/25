@@ -153,7 +153,7 @@ export function Recommendations() {
       const res = await fetch("/api/gemini/generate-movie", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: queryStr, type: item.type })
+        body: JSON.stringify({ query: queryStr, type: item.type, year: item.year })
       });
 
       const data = await res.json();
