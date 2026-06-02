@@ -135,6 +135,12 @@ interface AppState {
   submitComment: (reviewId: string, text: string) => Promise<boolean>;
   theme: "classic" | "light";
   setTheme: (theme: "classic" | "light") => void;
+  showAuth: boolean;
+  authMode: "login" | "register";
+  showGenerator: boolean;
+  setShowAuth: (show: boolean) => void;
+  setAuthMode: (mode: "login" | "register") => void;
+  setShowGenerator: (show: boolean) => void;
 }
 
 // Load saved auth state on start if present in local storage
@@ -1053,5 +1059,11 @@ export const useStore = create<AppState>((set, get) => ({
       localStorage.setItem("25kadr_theme", theme);
       document.documentElement.setAttribute("data-theme", theme);
     }
-  }
+  },
+  showAuth: false,
+  authMode: "login",
+  showGenerator: false,
+  setShowAuth: (show: boolean) => set({ showAuth: show }),
+  setAuthMode: (mode: "login" | "register") => set({ authMode: mode }),
+  setShowGenerator: (show: boolean) => set({ showGenerator: show })
 }));

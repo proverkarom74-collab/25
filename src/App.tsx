@@ -3,6 +3,8 @@ import { motion } from "motion/react";
 import { formatMovieDuration, formatMovieReleaseDate, AchievementProgress } from "./types";
 import { useStore } from "./store";
 import { Header } from "./components/Header";
+import { AuthModal } from "./components/AuthModal";
+import { AIGeneratorModal } from "./components/AIGeneratorModal";
 import { FilmCard } from "./components/FilmCard";
 import { MovieSlider } from "./components/MovieSlider";
 import { ReviewCard } from "./components/ReviewCard";
@@ -81,7 +83,11 @@ export default function App() {
     moderationRequests,
     loadingModeration,
     fetchModerationRequests,
-    reviewModerationRequest
+    reviewModerationRequest,
+    showAuth,
+    setShowAuth,
+    authMode,
+    setAuthMode
   } = useStore();
 
   useEffect(() => {
@@ -2705,6 +2711,18 @@ export default function App() {
           </div>
         ))}
       </div>
+
+      {/* Auth Modal Overlay */}
+      {showAuth && (
+        <AuthModal 
+          mode={authMode} 
+          setMode={setAuthMode} 
+          onClose={() => setShowAuth(false)} 
+        />
+      )}
+
+      {/* AI Generator Modal Overlay */}
+      <AIGeneratorModal />
     </div>
   );
 }
