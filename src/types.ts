@@ -8,6 +8,13 @@ export interface RatingBreakdown {
 
 export function calculateOverallRating(breakdown: Partial<RatingBreakdown> | undefined): number {
   if (!breakdown) return 0;
+  const isZero = (breakdown.story ?? 0) === 0 &&
+                 (breakdown.acting ?? 0) === 0 &&
+                 (breakdown.visuals ?? 0) === 0 &&
+                 (breakdown.sound ?? 0) === 0 &&
+                 (breakdown.genreMatch ?? 0) === 0;
+  if (isZero) return 0;
+
   const story = Number(breakdown.story) || 5;
   const acting = Number(breakdown.acting) || 5;
   const visuals = Number(breakdown.visuals) || 5;

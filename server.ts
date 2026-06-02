@@ -819,7 +819,8 @@ async function startServer() {
     }
 
     if (!updatedKp) {
-      const calculatedBase = movie.ratingAverage / 10;
+      const ratingBase = movie.ratingAverage > 0 ? movie.ratingAverage : (65 + Math.floor(Math.random() * 20));
+      const calculatedBase = ratingBase / 10;
       const rating = Math.round((calculatedBase + (Math.random() * 0.4 - 0.2)) * 10) / 10;
       updatedKp = { 
         rating: Math.min(10, Math.max(1, rating)), 
@@ -827,7 +828,8 @@ async function startServer() {
       };
     }
     if (!updatedImdb) {
-      const calculatedBase = movie.ratingAverage / 10;
+      const ratingBase = movie.ratingAverage > 0 ? movie.ratingAverage : (65 + Math.floor(Math.random() * 20));
+      const calculatedBase = ratingBase / 10;
       const rating = Math.round((calculatedBase + (Math.random() * 0.4 - 0.2)) * 10) / 10;
       updatedImdb = { 
         rating: Math.min(10, Math.max(1, rating)), 
@@ -835,11 +837,12 @@ async function startServer() {
       };
     }
     if (!updatedMeta) {
-      const rating = Math.round(movie.ratingAverage + (Math.random() * 10 - 5));
+      const ratingBase = movie.ratingAverage > 0 ? movie.ratingAverage : (65 + Math.floor(Math.random() * 20));
+      const rating = Math.round(ratingBase + (Math.random() * 10 - 5));
       updatedMeta = { rating: Math.min(100, Math.max(10, rating)) };
     }
     if (!updatedRotten) {
-      const base = movie.ratingAverage;
+      const base = movie.ratingAverage > 0 ? movie.ratingAverage : (65 + Math.floor(Math.random() * 20));
       const critics = Math.round(base + (Math.random() * 14 - 7));
       const audience = Math.round(base + (Math.random() * 8 - 4));
       updatedRotten = { 
@@ -1398,14 +1401,14 @@ async function startServer() {
         posterUrl: "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=600&q=80",
         trailerUrl: "https://www.youtube.com/embed/zSWdZVtXT7E",
         ratingsAverageBreakdown: {
-          story: 7.5,
-          acting: 8.0,
-          visuals: 8.2,
-          sound: 7.5,
-          genreMatch: 8.5
+          story: 0,
+          acting: 0,
+          visuals: 0,
+          sound: 0,
+          genreMatch: 0
         },
-        ratingAverage: 70.2,
-        ratingsCount: 14
+        ratingAverage: 0,
+        ratingsCount: 0
       };
 
       let mockedWithRatings = mockedTitle;
@@ -1509,14 +1512,14 @@ async function startServer() {
         posterUrl: `https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80&sig=${Math.floor(Math.random() * 1000)}&q_keyword=${pKeyword}`,
         trailerUrl: "https://www.youtube.com/embed/zSWdZVtXT7E", // Default trailers, can load YouTube searches nicely
         ratingsAverageBreakdown: {
-          story: parseFloat(cleanJson.ratingsAverageBreakdown.story) || 7.0,
-          acting: parseFloat(cleanJson.ratingsAverageBreakdown.acting) || 7.0,
-          visuals: parseFloat(cleanJson.ratingsAverageBreakdown.visuals) || 7.0,
-          sound: parseFloat(cleanJson.ratingsAverageBreakdown.sound) || 7.0,
-          genreMatch: parseFloat(cleanJson.ratingsAverageBreakdown.genreMatch) || 7.0
+          story: 0,
+          acting: 0,
+          visuals: 0,
+          sound: 0,
+          genreMatch: 0
         },
-        ratingAverage: 70.0, // recalculated below
-        ratingsCount: Math.floor(Math.random() * 40) + 12
+        ratingAverage: 0,
+        ratingsCount: 0
       };
 
       generatedTitle.ratingAverage = calculateOverallRating(generatedTitle.ratingsAverageBreakdown);

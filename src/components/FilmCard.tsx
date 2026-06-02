@@ -53,7 +53,7 @@ export function FilmCard({ movie }: FilmCardProps) {
             e.stopPropagation();
             toggleWatchlist(movie.slug);
           }}
-          className={`absolute top-3 right-3 p-2 rounded-md backdrop-blur-md border transition cursor-pointer ${
+          className={`absolute top-3 right-3 p-2 rounded-md backdrop-blur-md border transition cursor-pointer z-10 ${
             isWatched 
               ? "bg-garnet border-garnet text-white" 
               : "bg-black/60 border-white/10 text-gray-400 hover:text-white"
